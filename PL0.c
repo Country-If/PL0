@@ -65,10 +65,11 @@ int main() {
 // 初始化
 void init() {
     int i;
-    // 设置单字符符号
     for (i = 0; i <= 255; i++) {
         ssym[i] = nul;
     }
+
+    // 设置单字符符号
     ssym['+'] = plus;
     ssym['-'] = minus;
     ssym['*'] = times;
@@ -651,9 +652,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                     }
                     if (i == 0) {
                         error(35);                    /* read() 中应是声明过的变量名 */
-                    }
-                        //以下片段由莫奇易录入
-                    else {
+                    } else {
                         gendo(opr, 0, 16);            /* 生成输入命令，读取值到栈顶 */
                         gendo(sto, lev - table[i].level, table[i].adr);        /* 储存到变量 */
                     }
