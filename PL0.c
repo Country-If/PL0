@@ -50,12 +50,14 @@ int main() {
                 fa2 = fopen("fa2.tmp", "w");
                 interpret();    /*调用解释执行程序*/
                 fclose(fa2);
-            } else {
+            }
+            else {
                 printf("Errors in pl/0 program");
             }
         }
         fclose(fin);
-    } else {
+    }
+    else {
         printf("Can't Open file!\n");
     }
     printf("\n");
@@ -258,10 +260,12 @@ int getsym() {
         } while (i <= j);
         if (i - 1 > j) {
             sym = wsym[k];
-        } else {
+        }
+        else {
             sym = ident;        /*搜索失败，则是名字或数字*/
         }
-    } else {
+    }
+    else {
         if (ch >= '0' && ch <= '9') {                /*检测是否为数字：以0~9开头*/
             k = 0;
             num = 0;
@@ -275,35 +279,42 @@ int getsym() {
             if (k > nmax) {
                 error(30);
             }
-        } else {
+        }
+        else {
             if (ch == ':') {  /*检测赋值符号*/
                 getchdo;
                 if (ch == '=') {
                     sym = becomes;
                     getchdo;
-                } else {
+                }
+                else {
                     sym = nul;    /*不能识别的符号*/
                 }
-            } else {
+            }
+            else {
                 if (ch == '<') {   /*检测小于或小于等于符号*/
                     getchdo;
                     if (ch == '=') {
                         sym = leq;
                         getchdo;
-                    } else {
+                    }
+                    else {
                         sym = lss;
                     }
-                } else {
+                }
+                else {
                     if (ch == '>')   /*检测大于或大于等于符号*/
                     {
                         getchdo;
                         if (ch == '=') {
                             sym = geq;
                             getchdo;
-                        } else {
+                        }
+                        else {
                             sym = gtr;
                         }
-                    } else {
+                    }
+                    else {
                         sym = ssym[ch]; /*当符号不满足上述条件时，全部按照单字符符号处理*/
                         //getchdo;
                         //richard;
@@ -399,7 +410,8 @@ int block(int lev, int tx, bool *fsys) {
                 }
                 if (sym == semicolon) {
                     getsymdo;
-                } else {
+                }
+                else {
                     error(5);            /*漏掉了逗号或者分号*/
                 }
             } while (sym == ident);
@@ -416,7 +428,8 @@ int block(int lev, int tx, bool *fsys) {
                 }
                 if (sym == semicolon) {
                     getsymdo;
-                } else {
+                }
+                else {
                     error(5);
                 }
             } while (sym == ident);
@@ -427,12 +440,14 @@ int block(int lev, int tx, bool *fsys) {
             if (sym == ident) {
                 enter(procedur, &tx, lev, &dx);        /*记录过程名字*/
                 getsymdo;
-            } else {
+            }
+            else {
                 error(4);                             /*procedure后应为标识符*/
             }
             if (sym == semicolon) {
                 getsymdo;
-            } else {
+            }
+            else {
                 error(5);                              /*漏掉了分号*/
             }
             memcpy(nxtlev, fsys, sizeof(bool) * symnum);
@@ -446,7 +461,8 @@ int block(int lev, int tx, bool *fsys) {
                 nxtlev[ident] = true;
                 nxtlev[procsym] = true;
                 testdo(nxtlev, fsys, 6);
-            } else {
+            }
+            else {
                 error(5); /* 漏掉了分号 */
             }
         }
@@ -564,13 +580,16 @@ int constdeclaration(int *ptx, int lev, int *pdx) {
             if (sym == number) {
                 enter(constant, ptx, lev, pdx);
                 getsymdo;
-            } else {
+            }
+            else {
                 error(2);   /* 常量说明=后应是数字 */
             }
-        } else {
+        }
+        else {
             error(3);   /* 常量说明标识后应是= */
         }
-    } else {
+    }
+    else {
         error(4);   /* const后应是标识 */
     }
     return 0;
@@ -583,7 +602,8 @@ int vardeclaration(int *ptx, int lev, int *pdx) {
     if (sym == ident) {
         enter(variable, ptx, lev, pdx); //填写名字表
         getsymdo;
-    } else {
+    }
+    else {
         error(4);   /* var后应是标识 */
     }
     return 0;
@@ -615,15 +635,18 @@ int statement(bool *fsys, int *ptx, int lev) {
         i = position(id, *ptx);
         if (i == 0) {
             error(11);
-        } else {
+        }
+        else {
             if (table[i].kind != variable) {
                 error(12);                            /*赋值语句格式错误*/
                 i = 0;
-            } else {
+            }
+            else {
                 getsymdo;
                 if (sym == becomes) {
                     getsymdo;
-                } else {
+                }
+                else {
                     error(13);                        /*没有检测到赋值符号*/
                 }
                 memcpy(nxtlev, fsys, sizeof(bool) * symnum);
@@ -636,23 +659,27 @@ int statement(bool *fsys, int *ptx, int lev) {
                 }
             }
         }//if(i == 0)
-    } else {
+    }
+    else {
         if (sym == readsym)                            /* 准备按照 read 语句处理 */
         {
             getsymdo;
             if (sym != lparen) {
                 error(34);                            /* 格式错误，应是左括号 */
-            } else {
+            }
+            else {
                 do {
                     getsymdo;
                     if (sym == ident) {
                         i = position(id, *ptx);        /* 查找要读的变量 */
-                    } else {
+                    }
+                    else {
                         i = 0;
                     }
                     if (i == 0) {
                         error(35);                    /* read() 中应是声明过的变量名 */
-                    } else {
+                    }
+                    else {
                         gendo(opr, 0, 16);            /* 生成输入命令，读取值到栈顶 */
                         gendo(sto, lev - table[i].level, table[i].adr);        /* 储存到变量 */
                     }
@@ -665,10 +692,12 @@ int statement(bool *fsys, int *ptx, int lev) {
                 {
                     getsymdo;
                 }
-            } else {
+            }
+            else {
                 getsymdo;
             }
-        } else {
+        }
+        else {
             if (sym == writesym)                    /*准备按照write语句处理，与read类似*/
             {
                 getsymdo;
@@ -684,31 +713,37 @@ int statement(bool *fsys, int *ptx, int lev) {
                     } while (sym == comma);
                     if (sym != rparen) {
                         error(33);                /*write（）中应为完整表达式*/
-                    } else {
+                    }
+                    else {
                         getsymdo;
                     }
                 }
                 gendo(opr, 0, 15);                /*输出换行*/
-            } else {
+            }
+            else {
                 if (sym == callsym)                /*准备按照call语句处理*/
                 {
                     getsymdo;
                     if (sym != ident) {
                         error(14);              /* call后应为标识符 */
-                    } else {
+                    }
+                    else {
                         i = position(id, *ptx);
                         if (i == 0) {
                             error(11);          /* 过程未找到 */
-                        } else {
+                        }
+                        else {
                             if (table[i].kind == procedur) {
                                 gendo(cal, lev - table[i].level, table[i].adr); /* 生成call指令 */
-                            } else {
+                            }
+                            else {
                                 error(15);      /* call后标识符应为过程 */
                             }
                         }
                         getsymdo;
                     }
-                } else {
+                }
+                else {
                     if (sym == ifsym)                      /* 准备按照if语句处理 */
                     {
                         getsymdo;
@@ -718,7 +753,8 @@ int statement(bool *fsys, int *ptx, int lev) {
                         conditiondo(nxtlev, ptx, lev);    /* 调用条件处理（逻辑运算）函数*/
                         if (sym == thensym) {
                             getsymdo;
-                        } else {
+                        }
+                        else {
                             error(16);                    /* 缺少then */
                         }
                         cx1 = cx;                         /* 保存当前指令地址 */
@@ -727,7 +763,8 @@ int statement(bool *fsys, int *ptx, int lev) {
                         code[cx1].a = cx;                 /* 经statement do处理后，cx为then后语句执
 															行完的位置，它正是前面未定的跳转地
 															址*/
-                    } else {
+                    }
+                    else {
                         if (sym == beginsym)    /*准备按照复合语句处理*/
                         {
                             getsymdo;
@@ -739,17 +776,20 @@ int statement(bool *fsys, int *ptx, int lev) {
                             while (inset(sym, statbegsys) || sym == semicolon) {
                                 if (sym == semicolon) {
                                     getsymdo;
-                                } else {
+                                }
+                                else {
                                     error(10);    /*缺少分号*/
                                 }
                                 statementdo(nxtlev, ptx, lev);
                             }
                             if (sym == endsym) {
                                 getsymdo;
-                            } else {
+                            }
+                            else {
                                 error(17);    /*缺少end或分号*/
                             }
-                        } else {
+                        }
+                        else {
                             if (sym == whilesym)    /*准备按照while语句处理*/
                             {
                                 cx1 = cx;    /*保存判断条件操作的位置*/
@@ -761,13 +801,15 @@ int statement(bool *fsys, int *ptx, int lev) {
                                 gendo(jpc, 0, 0);    /*生成条件跳转,但跳出循环的地址未知*/
                                 if (sym == dosym) {
                                     getsymdo;
-                                } else {
+                                }
+                                else {
                                     error(18);    /*缺少do*/
                                 }
                                 statementdo(fsys, ptx, lev);    /*循环体*/
                                 gendo(jmp, 0, cx1);    /*回头重新判断条件*/
                                 code[cx2].a = cx;        /* 反填跳出循环的地址，与if类似 */
-                            } else {
+                            }
+                            else {
                                 memset(nxtlev, 0, sizeof(bool) * symnum);    /* 语句结束无补救集合 */
                                 testdo(fsys, nxtlev, 19);    /* 检测语句结束的正确性 */
                             }
@@ -797,7 +839,8 @@ int expression(bool *fsys, int *ptx, int lev) {
         if (addop == minus) {
             gendo(opr, 0, 1);    /*如果开头为负号，生成取负指令*/
         }
-    } else    /*此时表达式被看作项的加减*/
+    }
+    else    /*此时表达式被看作项的加减*/
     {
         memcpy(nxtlev, fsys, sizeof(bool) * symnum);
         nxtlev[plus] = true;
@@ -813,7 +856,8 @@ int expression(bool *fsys, int *ptx, int lev) {
         termdo(nxtlev, ptx, lev);             /*处理项*/
         if (addop == plus) {
             gendo(opr, 0, 2);                 /*生成加法指令*/
-        } else {
+        }
+        else {
             gendo(opr, 0, 3);                 /*生成减法指令*/
         }
     }
@@ -836,7 +880,8 @@ int term(bool *fsys, int *ptx, int lev) {
         factordo(nxtlev, ptx, lev);
         if (mulop == times) {
             gendo(opr, 0, 4);    /*生成乘法指令*/
-        } else {
+        }
+        else {
             gendo(opr, 0, 5);    /*生成除法指令*/
         }
     }
@@ -857,7 +902,8 @@ int factor(bool *fsys, int *ptx, int lev) {
             i = position(id, *ptx);                    /*查找名字*/
             if (i == 0) {
                 error(11);                            /*标识符未声明*/
-            } else {
+            }
+            else {
                 switch (table[i].kind) {
                     case constant:                    /*名字为常量*/
                         gendo(lit, 0, table[i].val);/*直接把常量的值入栈*/
@@ -872,7 +918,8 @@ int factor(bool *fsys, int *ptx, int lev) {
                 }
             }
             getsymdo;
-        } else {
+        }
+        else {
             if (sym == number)                            /*因子为数*/
             {
                 if (num > amax) {
@@ -881,7 +928,8 @@ int factor(bool *fsys, int *ptx, int lev) {
                 }
                 gendo(lit, 0, num);
                 getsymdo;
-            } else {
+            }
+            else {
                 if (sym == lparen)                    /*因子为表达式*/
                 {
                     getsymdo;
@@ -890,7 +938,8 @@ int factor(bool *fsys, int *ptx, int lev) {
                     expressiondo(nxtlev, ptx, lev);
                     if (sym == rparen) {
                         getsymdo;
-                    } else {
+                    }
+                    else {
                         error(22);                    /*缺少右括号*/
                     }
                 }
@@ -912,7 +961,8 @@ int condition(bool *fsys, int *ptx, int lev) {
         getsymdo;
         expressiondo(fsys, ptx, lev);
         gendo(opr, 0, 6);                             /*生成 odd 指令*/
-    } else {
+    }
+    else {
         /*逻辑表达式处理*/
         memcpy(nxtlev, fsys, sizeof(bool) * symnum);
         nxtlev[eql] = true;
@@ -926,7 +976,8 @@ int condition(bool *fsys, int *ptx, int lev) {
         expressiondo(nxtlev, ptx, lev);
         if (sym != eql && sym != neq && sym != lss && sym != leq && sym != gtr && sym != geq) {
             error(20);
-        } else {
+        }
+        else {
             relop = sym;
             getsymdo;
             expressiondo(fsys, ptx, lev);
