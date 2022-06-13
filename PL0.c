@@ -72,9 +72,6 @@ void init() {
     ssym['+'] = plus;
     ssym['-'] = minus;
     ssym['*'] = times;
-
-
-    /* 614 */
     ssym['/'] = slash;
     ssym['('] = lparen;
     ssym[')'] = rparen;
@@ -183,10 +180,7 @@ int mulset(bool *sr, bool *s1, bool *s2, int n) {
 /*
 *   出错处理，打印出错位置和错误编码
 */
-void error(int n)
-
-/*616*/
-{
+void error(int n) {
     char space[81];
     memset(space, 32, 81);
     space[cc - 1] = 0;//出错时当前符号已经读完，所以cc-1
@@ -272,7 +266,6 @@ int getsym() {
             num = 0;
             sym = number;
             do {
-                //376页- 618===================================================
                 num = 10 * num + ch - '0';
                 k++;
                 getchdo;
@@ -535,8 +528,6 @@ void enter(enum object k, int *ptx, int lev, int *pdx) {
             break;
         case procedur:                        /*过程名字*/
             table[(*ptx)].level = lev;
-
-            // 624
             break;
     }
 }
@@ -776,7 +767,6 @@ int statement(bool *fsys, int *ptx, int lev) {
                                 }
                                 statementdo(fsys, ptx, lev);    /*循环体*/
                                 gendo(jmp, 0, cx1);    /*回头重新判断条件*/
-                                //448
                                 code[cx2].a = cx;        /* 反填跳出循环的地址，与if类似 */
                             } else {
                                 memset(nxtlev, 0, sizeof(bool) * symnum);    /* 语句结束无补救集合 */
@@ -1018,9 +1008,7 @@ void interpret() {
                     case 6:
                         s[t - 1] = s[t - 1] % 2;
                         break;
-
                     case 8:
-                        //东642
                         t--;
                         s[t - 1] = (s[t - 1] == s[t]);
                         break;
