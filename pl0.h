@@ -9,7 +9,7 @@ typedef enum {
 } bool;
 
 
-#define norw 13
+#define norw 17         // sym中的保留字数量(*sym/*SYM)
 #define txmax 100
 #define nmax 14
 #define al 10
@@ -19,15 +19,16 @@ typedef enum {
 
 
 enum symbol {
-    nul, ident, number, plus, minus,
-    times, slash, oddsym, eql, neq,
-    lss, leq, gtr, geq, lparen,
-    rparen, comma, semicolon, period, becomes,
-    beginsym, endsym, ifsym, thensym, whilesym,
-    writesym, readsym, dosym, callsym, constsym,
-    varsym, procsym,
+    nul, ident, number, plus, minus,                // 5
+    times, slash, oddsym, eql, neq,                 // 10
+    lss, leq, gtr, geq, lparen,                     // 15
+    rparen, comma, semicolon, period, becomes,      // 20
+    beginsym, endsym, ifsym, thensym, whilesym,     // 25
+    writesym, readsym, dosym, callsym, constsym,    // 30
+    varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
+    PLUSEQ, MINUSEQ, PLUSPS, MINUSMS, RETURNSYM,    // 40
 };
-#define symnum 32
+#define symnum 40       // sym数量
 
 /*名字表中的类型*/
 

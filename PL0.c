@@ -114,35 +114,44 @@ void init() {
     ssym['#'] = neq;
     ssym[';'] = semicolon;
 
-    /* 设置保留字名字,按照字母顺序，便于折半查找 */
-    strcpy(&(word[0][0]), "begin");
-    strcpy(&(word[1][0]), "call");
-    strcpy(&(word[2][0]), "const");
-    strcpy(&(word[3][0]), "do");
-    strcpy(&(word[4][0]), "end");
-    strcpy(&(word[5][0]), "if");
-    strcpy(&(word[6][0]), "odd");
-    strcpy(&(word[7][0]), "procedure");
-    strcpy(&(word[8][0]), "read");
-    strcpy(&(word[9][0]), "then");
-    strcpy(&(word[10][0]), "var");
-    strcpy(&(word[11][0]), "while");
-    strcpy(&(word[12][0]), "write");
+    /* 设置保留字名字,按照字母顺序，便于折半查找 */     /*ASCII中，大写字母在小写字母之前*/
+    strcpy(&(word[0][0]), "DOWNTO");
+    strcpy(&(word[1][0]), "FOR");
+    strcpy(&(word[2][0]), "RETURN");
+    strcpy(&(word[3][0]), "TO");
+    strcpy(&(word[4][0]), "begin");
+    strcpy(&(word[5][0]), "call");
+    strcpy(&(word[6][0]), "const");
+    strcpy(&(word[7][0]), "do");
+    strcpy(&(word[8][0]), "end");
+    strcpy(&(word[9][0]), "if");
+    strcpy(&(word[10][0]), "odd");
+    strcpy(&(word[11][0]), "procedure");
+    strcpy(&(word[12][0]), "read");
+    strcpy(&(word[13][0]), "then");
+    strcpy(&(word[14][0]), "var");
+    strcpy(&(word[15][0]), "while");
+    strcpy(&(word[16][0]), "write");
 
     /* 设置保留字符号 */
-    wsym[0] = beginsym;
-    wsym[1] = callsym;
-    wsym[2] = constsym;
-    wsym[3] = dosym;
-    wsym[4] = endsym;
-    wsym[5] = ifsym;
-    wsym[6] = oddsym;
-    wsym[7] = procsym;
-    wsym[8] = readsym;
-    wsym[9] = thensym;
-    wsym[10] = varsym;
-    wsym[11] = whilesym;
-    wsym[12] = writesym;
+    wsym[0] = DOWNTOSYM;
+    wsym[1] = FORSYM;
+    wsym[2] = RETURNSYM;
+    wsym[3] = TOSYM;
+    wsym[4] = beginsym;
+    wsym[5] = callsym;
+    wsym[6] = constsym;
+    wsym[7] = dosym;
+    wsym[8] = endsym;
+    wsym[9] = ifsym;
+    wsym[10] = oddsym;
+    wsym[11] = procsym;
+    wsym[12] = readsym;
+    wsym[13] = thensym;
+    wsym[14] = varsym;
+    wsym[15] = whilesym;
+    wsym[16] = writesym;
+
 
     /* 设置指令名称 */
     strcpy(&(mnemonic[lit][0]), "lit");
@@ -266,7 +275,7 @@ int getsym() {
     {
         getchdo;
     }
-    if (ch >= 'a' && ch <= 'z') {                    /*名字或保留字以a~z开头*/
+    if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z') {                    /*名字或保留字以a~z开头*/
         k = 0;
         do {
             if (k < al) {
@@ -274,7 +283,7 @@ int getsym() {
                 k++;
             }
             getchdo;
-        } while (ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9');
+        } while (ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z');
         a[k] = 0;
         strcpy(id, a);
         i = 0;
@@ -345,13 +354,45 @@ int getsym() {
                         }
                     }
                     else {
-                        sym = ssym[ch]; /*当符号不满足上述条件时，全部按照单字符符号处理*/
-                        //getchdo;
-                        //richard;
-                        if (sym != period) {
+                        if (ch == '+') {
                             getchdo;
+                            if (ch == '=') {    // +=
+                                sym = PLUSEQ;
+                                getchdo;
+                            }
+                            else if (ch == '+') {      // ++
+                                sym = PLUSPS;
+                                getchdo;
+                            }
+                            else {      // +
+                                sym = plus;
+                            }
                         }
-                        //end richard
+                        else {
+                            if (ch == '-') {
+                                getchdo;
+                                if (ch == '=') {    // -=
+                                    sym = MINUSEQ;
+                                    getchdo;
+                                }
+                                else if (ch == '-') {      // --
+                                    sym = MINUSMS;
+                                    getchdo;
+                                }
+                                else {      // -
+                                    sym = minus;
+                                }
+                            }
+                            else {
+                                sym = ssym[ch]; /*当符号不满足上述条件时，全部按照单字符符号处理*/
+                                //getchdo;
+                                //richard;
+                                if (sym != period) {
+                                    getchdo;
+                                }
+                                //end richard
+                            }
+                        }
                     }
                 }
             }
@@ -840,8 +881,57 @@ int statement(bool *fsys, int *ptx, int lev) {
                                 code[cx2].a = cx;        /* 反填跳出循环的地址，与if类似 */
                             }
                             else {
-                                memset(nxtlev, 0, sizeof(bool) * symnum);    /* 语句结束无补救集合 */
-                                testdo(fsys, nxtlev, 19);    /* 检测语句结束的正确性 */
+                                if (sym == FORSYM) {
+                                    printf("keyword: FOR\n");
+                                    getsymdo;
+                                }
+                                else {
+                                    if (sym == TOSYM) {
+                                        printf("keyword: TO\n");
+                                        getsymdo;
+                                    }
+                                    else {
+                                        if (sym == DOWNTOSYM) {
+                                            printf("keyword: DOWNTO\n");
+                                            getsymdo;
+                                        }
+                                        else {
+                                            if (sym == RETURNSYM) {
+                                                printf("keyword: RETURN\n");
+                                                getsymdo;
+                                            }
+                                            else {
+                                                if (sym == PLUSEQ) {
+                                                    printf("keyword: +=\n");
+                                                    getsymdo;
+                                                }
+                                                else {
+                                                    if (sym == PLUSPS) {
+                                                        printf("keyword: ++\n");
+                                                        getsymdo;
+                                                    }
+                                                    else {
+                                                        if (sym == MINUSEQ) {
+                                                            printf("keyword: -=\n");
+                                                            getsymdo;
+                                                        }
+                                                        else {
+                                                            if (sym == MINUSMS) {
+                                                                printf("keyword: --\n");
+                                                                getsymdo;
+                                                            }
+                                                            else {
+                                                                memset(nxtlev, 0,
+                                                                       sizeof(bool) * symnum);    /* 语句结束无补救集合 */
+                                                                testdo(fsys, nxtlev, 19);    /* 检测语句结束的正确性 */
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
