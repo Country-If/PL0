@@ -2,6 +2,7 @@
 // #pragma warning(disable:4996)
 
 #include<stdio.h>
+#include<stdlib.h>
 #include<time.h>
 #include "pl0.h"
 #include "string.h"
@@ -72,6 +73,7 @@ int main() {
     print_time();
     printf("\n");
 
+    system("pause");
     return 0;
 }
 
