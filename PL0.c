@@ -111,7 +111,7 @@ void init() {
     ssym['='] = eql;
     ssym[','] = comma;
     ssym['.'] = period;
-    ssym['#'] = neq;
+//    ssym['#'] = neq;
     ssym[';'] = semicolon;
 
     /* ÉèÖÃ±£Áô×ÖÃû×Ö,°´ÕÕ×ÖÄ¸Ë³Ðò£¬±ãÓÚÕÛ°ë²éÕÒ */     /*ASCIIÖÐ£¬´óÐ´×ÖÄ¸ÔÚÐ¡Ð´×ÖÄ¸Ö®Ç°*/
@@ -335,6 +335,10 @@ int getsym() {
                     getchdo;
                     if (ch == '=') {
                         sym = leq;
+                        getchdo;
+                    }
+                    else if (ch == '>') {
+                        sym = neq;
                         getchdo;
                     }
                     else {
