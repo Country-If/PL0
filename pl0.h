@@ -151,3 +151,5 @@ int position(char *idt, int tx);
 void enter(enum object k, int *ptx, int lev, int *pdx);
 
 int base(int l, int *s, int b);
+
+void print_time();

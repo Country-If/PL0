@@ -2,12 +2,18 @@
 // #pragma warning(disable:4996)
 
 #include<stdio.h>
+#include<time.h>
 #include "pl0.h"
 #include "string.h"
 /*解释执行时使用的栈*/
 #define stacksize 500
 
 int main() {
+    printf("开始调试时间：");
+    print_time();
+
+    printf("信息安全1班\t3119005436\t徐国涛\n\n");
+
     bool nxtlev[symnum];
     printf("Input pl/0 file?");
     scanf("%s", fname);               /*输入文件名*/
@@ -61,7 +67,29 @@ int main() {
         printf("Can't Open file!\n");
     }
     printf("\n");
+
+    printf("结束调试时间：");
+    print_time();
+    printf("\n");
+
     return 0;
+}
+
+/*
+ * 打印当前时间
+ */
+void print_time() {
+    char time_len[20] = {0};
+
+    time_t timep;
+    time(&timep);
+
+    struct tm *tmp_pointer;
+    tmp_pointer = gmtime(&timep);
+
+    snprintf(time_len, 20, "%d-%d-%d %d:%d:%d", 1900 + tmp_pointer->tm_year, 1 + tmp_pointer->tm_mon,
+             tmp_pointer->tm_mday, 8 + tmp_pointer->tm_hour, tmp_pointer->tm_min, tmp_pointer->tm_sec);
+    printf("%s\n", time_len);
 }
 
 // 初始化
@@ -359,7 +387,7 @@ int gen(enum fct x, int y, int z) {
  * s1:我们需要的符号
  * s2:如果不是我们需要的，则需要一个补救用的集合
  * n:错误符号
- * 
+ *
  */
 
 
@@ -970,7 +998,6 @@ int condition(bool *fsys, int *ptx, int lev) {
         nxtlev[lss] = true;
         nxtlev[leq] = true;
 
-        //392
         nxtlev[gtr] = true;
         nxtlev[geq] = true;
         expressiondo(nxtlev, ptx, lev);
