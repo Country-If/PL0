@@ -1,0 +1,7 @@
+var a, b;
+begin
+    read(a);
+    b := a;
+    if a <> 0 then b:= -a;
+    write(b);
+end.
