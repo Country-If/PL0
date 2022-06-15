@@ -116,41 +116,43 @@ void init() {
 
     /* 设置保留字名字,按照字母顺序，便于折半查找 */     /*ASCII中，大写字母在小写字母之前*/
     strcpy(&(word[0][0]), "DOWNTO");
-    strcpy(&(word[1][0]), "FOR");
-    strcpy(&(word[2][0]), "RETURN");
-    strcpy(&(word[3][0]), "TO");
-    strcpy(&(word[4][0]), "begin");
-    strcpy(&(word[5][0]), "call");
-    strcpy(&(word[6][0]), "const");
-    strcpy(&(word[7][0]), "do");
-    strcpy(&(word[8][0]), "end");
-    strcpy(&(word[9][0]), "if");
-    strcpy(&(word[10][0]), "odd");
-    strcpy(&(word[11][0]), "procedure");
-    strcpy(&(word[12][0]), "read");
-    strcpy(&(word[13][0]), "then");
-    strcpy(&(word[14][0]), "var");
-    strcpy(&(word[15][0]), "while");
-    strcpy(&(word[16][0]), "write");
+    strcpy(&(word[1][0]), "ELSE");
+    strcpy(&(word[2][0]), "FOR");
+    strcpy(&(word[3][0]), "RETURN");
+    strcpy(&(word[4][0]), "TO");
+    strcpy(&(word[5][0]), "begin");
+    strcpy(&(word[6][0]), "call");
+    strcpy(&(word[7][0]), "const");
+    strcpy(&(word[8][0]), "do");
+    strcpy(&(word[9][0]), "end");
+    strcpy(&(word[10][0]), "if");
+    strcpy(&(word[11][0]), "odd");
+    strcpy(&(word[12][0]), "procedure");
+    strcpy(&(word[13][0]), "read");
+    strcpy(&(word[14][0]), "then");
+    strcpy(&(word[15][0]), "var");
+    strcpy(&(word[16][0]), "while");
+    strcpy(&(word[17][0]), "write");
 
     /* 设置保留字符号 */
     wsym[0] = DOWNTOSYM;
-    wsym[1] = FORSYM;
-    wsym[2] = RETURNSYM;
-    wsym[3] = TOSYM;
-    wsym[4] = beginsym;
-    wsym[5] = callsym;
-    wsym[6] = constsym;
-    wsym[7] = dosym;
-    wsym[8] = endsym;
-    wsym[9] = ifsym;
-    wsym[10] = oddsym;
-    wsym[11] = procsym;
-    wsym[12] = readsym;
-    wsym[13] = thensym;
-    wsym[14] = varsym;
-    wsym[15] = whilesym;
-    wsym[16] = writesym;
+    wsym[1] = ELSESYM;
+    wsym[2] = FORSYM;
+    wsym[3] = RETURNSYM;
+    wsym[4] = TOSYM;
+    wsym[5] = beginsym;
+    wsym[6] = callsym;
+    wsym[7] = constsym;
+    wsym[8] = dosym;
+    wsym[9] = endsym;
+    wsym[10] = ifsym;
+    wsym[11] = oddsym;
+    wsym[12] = procsym;
+    wsym[13] = readsym;
+    wsym[14] = thensym;
+    wsym[15] = varsym;
+    wsym[16] = whilesym;
+    wsym[17] = writesym;
 
 
     /* 设置指令名称 */
@@ -835,9 +837,19 @@ int statement(bool *fsys, int *ptx, int lev) {
                         cx1 = cx;                         /* 保存当前指令地址 */
                         gendo(jpc, 0, 0);                 /* 生成条件跳转指令，跳转地址暂写0 */
                         statementdo(fsys, ptx, lev);      /* 处理then后的语句 */
-                        code[cx1].a = cx;                 /* 经statement do处理后，cx为then后语句执
-															行完的位置，它正是前面未定的跳转地
-															址*/
+                        // add ELSE
+                        if (sym == ELSESYM) {
+                            getsymdo;
+                            cx2 = cx;       //记录jmp指令位置
+                            gendo(jmp, 0, 0);   //无条件跳转指令 ,将来直接跳转到else语句后面
+                            code[cx1].a = cx;   //地址回填，给jpc指令的地址赋值
+                            statementdo(fsys, ptx, lev);    //处理else后面的语句
+                            code[cx2].a = cx;   //else后面的语句结束位置，给jmp指令的地址赋值，if顺序执行时会跳转到该位置
+                        }
+                        else {
+                            code[cx1].a = cx;                 /* 经statement do处理后，cx为then后语句执
+						    									行完的位置，它正是前面未定的跳转地址*/
+                        }
                     }
                     else {
                         if (sym == beginsym)    /*准备按照复合语句处理*/

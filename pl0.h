@@ -9,7 +9,7 @@ typedef enum {
 } bool;
 
 
-#define norw 17         // sym中的保留字数量(*sym/*SYM)
+#define norw 18         // sym中的保留字数量(*sym/*SYM)
 #define txmax 100
 #define nmax 14
 #define al 10
@@ -27,8 +27,9 @@ enum symbol {
     writesym, readsym, dosym, callsym, constsym,    // 30
     varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
     PLUSEQ, MINUSEQ, PLUSPS, MINUSMS, RETURNSYM,    // 40
+    ELSESYM,    // 41
 };
-#define symnum 40       // sym数量
+#define symnum 41       // sym数量
 
 /*名字表中的类型*/
 
