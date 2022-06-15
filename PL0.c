@@ -729,9 +729,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                 memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                 expressiondo(nxtlev, ptx, lev);        /*处理赋值符号右侧表达式*/
                 if (i != 0) {
-                    /*expression将执行一系列指令，但最终结
-                    果将会保存在栈顶，执行sto命令完成赋
-                    值*/
+                    /*expression将执行一系列指令，但最终结果将会保存在栈顶，执行sto命令完成赋值*/
                     gendo(sto, lev - table[i].level, table[i].adr);
                 }
             }
