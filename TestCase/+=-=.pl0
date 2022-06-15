@@ -1,0 +1,10 @@
+var a, b, c ;
+begin
+    read(a);
+    b := a;
+    read(c);
+    a += c;
+    write(a);
+    b -= c;
+    write(b);
+end.
