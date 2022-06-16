@@ -27,7 +27,7 @@ enum symbol {
     beginsym, endsym, ifsym, thensym, whilesym,     // 25
     writesym, readsym, dosym, callsym, constsym,    // 30
     varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
-    PLUSEQ, MINUSEQ, PLUSPS, MINUSMS, RETURNSYM,    // 40
+    PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,    // 40
     ELSESYM,    // 41
 };
 #define symnum 41       // symÊýÁ¿

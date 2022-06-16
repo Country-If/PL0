@@ -367,7 +367,7 @@ int getsym() {
                                 getchdo;
                             }
                             else if (ch == '+') {      // ++
-                                sym = PLUSPS;
+                                sym = INC;
                                 getchdo;
                             }
                             else {      // +
@@ -382,7 +382,7 @@ int getsym() {
                                     getchdo;
                                 }
                                 else if (ch == '-') {      // --
-                                    sym = MINUSMS;
+                                    sym = DEC;
                                     getchdo;
                                 }
                                 else {      // -
@@ -1017,7 +1017,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                     getsymdo;
                                                 }
                                                 else {
-                                                    if (sym == PLUSPS) {
+                                                    if (sym == INC) {
                                                         printf("keyword: ++\n");
                                                         getsymdo;
                                                     }
@@ -1027,7 +1027,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                             getsymdo;
                                                         }
                                                         else {
-                                                            if (sym == MINUSMS) {
+                                                            if (sym == DEC) {
                                                                 printf("keyword: --\n");
                                                                 getsymdo;
                                                             }
