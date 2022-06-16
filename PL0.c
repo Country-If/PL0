@@ -749,11 +749,45 @@ int statement(bool *fsys, int *ptx, int lev) {
                         gendo(sto, lev - table[i].level, table[i].adr);
                     }
                 }
+                else if (sym == INC) {      // 后++
+                    if (i != 0) {
+                        gendo(lod, lev - table[i].level, table[i].adr);     // 取变量值到栈顶
+                        gendo(lit, 0, 1);                                   // 取常数1到栈顶用于自增
+                        gendo(opr, 0, 2);                                   // 次栈顶与栈顶相加
+                        if (i != 0) {
+                            gendo(sto, lev - table[i].level, table[i].adr); // 栈顶结果写入变量
+                            getsymdo;
+                        }
+                        else {
+                            error(11);
+                        }
+                    }
+                    else {
+                        error(11);
+                    }
+                }
+                else if (sym == DEC) {      // 后--
+                    if (i != 0) {
+                        gendo(lod, lev - table[i].level, table[i].adr);
+                        gendo(lit, 0, 1);
+                        gendo(opr, 0, 3);                                   // 次栈顶减去栈顶
+                        if (i != 0) {
+                            gendo(sto, lev - table[i].level, table[i].adr);
+                            getsymdo;
+                        }
+                        else {
+                            error(11);
+                        }
+                    }
+                    else {
+                        error(11);
+                    }
+                }
                 else {
                     error(13);                        /*没有检测到赋值符号*/
                 }
             }
-        }//if(i == 0)
+        }
     }
     else {
         if (sym == readsym)                            /* 准备按照 read 语句处理 */
@@ -1142,13 +1176,30 @@ int factor(bool *fsys, int *ptx, int lev) {
                     case variable:                    /*名字为变量*/
                         gendo(lod, lev - table[i].level, table[i].adr);/*找到变量地址并将其值入栈*/
                         break;
-
                     case procedur:                    /*名字为过程*/
                         error(21);                    /*不能为过程*/
                         break;
                 }
             }
             getsymdo;
+            if (sym == INC || sym == DEC) {
+                gendo(lit, 0, 1);                                       // 取常数1放入栈顶
+                if (sym == INC) {
+                    gendo(opr, 0, 2);                                   // 次栈顶与栈顶相加
+                    gendo(sto, lev - table[i].level, table[i].adr);     // 栈顶内容写入变量单元
+                    gendo(lod, lev - table[i].level, table[i].adr);     // 将变量值放入栈顶
+                    gendo(lit, 0, 1);                                   // 由于后自增不改变表达式的值
+                    gendo(opr, 0, 3);                                   // 故需要减去1
+                }
+                else if (sym == DEC) {
+                    gendo(opr, 0, 3);                                   // 次栈顶减去栈顶
+                    gendo(sto, lev - table[i].level, table[i].adr);
+                    gendo(lod, lev - table[i].level, table[i].adr);
+                    gendo(lit, 0, 1);
+                    gendo(opr, 0, 2);                                   // 后自减则加1
+                }
+                getsymdo;
+            }
         }
         else {
             if (sym == number)                            /*因子为数*/
@@ -1230,7 +1281,6 @@ int condition(bool *fsys, int *ptx, int lev) {
                 case leq:
                     gendo(opr, 0, 13);
                     break;
-
             }
         }
     }
