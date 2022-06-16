@@ -1,0 +1,4 @@
+var a;
+begin
+    FOR a := 1 TO 10 do write(a);
+end.
