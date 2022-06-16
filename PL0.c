@@ -1052,8 +1052,40 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                 }
                                                 else {
                                                     if (sym == INC) {
-                                                        printf("keyword: ++\n");
+//                                                        printf("keyword: ++\n");
                                                         getsymdo;
+                                                        if (sym == ident) {
+                                                            i = position(id, *ptx);
+                                                            if (i == 0) {
+                                                                error(11);
+                                                            }
+                                                            else {
+                                                                if (table[i].kind != variable) {
+                                                                    error(12);
+                                                                    i = 0;
+                                                                }
+                                                                else {
+                                                                    if (i != 0) {
+                                                                        gendo(lod, lev - table[i].level, table[i].adr);     // 取变量值到栈顶
+                                                                        gendo(lit, 0, 1);                                   // 取常数1到栈顶
+                                                                        gendo(opr, 0, 2);                                   // 次栈顶与栈顶相加
+                                                                        if (i != 0) {
+                                                                            gendo(sto, lev - table[i].level, table[i].adr); // 栈顶结果写入变量
+                                                                            getsymdo;
+                                                                        }
+                                                                        else {
+                                                                            error(11);
+                                                                        }
+                                                                    }
+                                                                    else {
+                                                                        error(11);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        else {
+                                                            error(104);             // 自定义报错，++--后缺少变量
+                                                        }
                                                     }
                                                     else {
                                                         if (sym == MINUSEQ) {
@@ -1062,8 +1094,40 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                         }
                                                         else {
                                                             if (sym == DEC) {
-                                                                printf("keyword: --\n");
+//                                                                printf("keyword: --\n");
                                                                 getsymdo;
+                                                                if (sym == ident) {
+                                                                    i = position(id, *ptx);
+                                                                    if (i == 0) {
+                                                                        error(11);
+                                                                    }
+                                                                    else {
+                                                                        if (table[i].kind != variable) {
+                                                                            error(12);
+                                                                            i = 0;
+                                                                        }
+                                                                        else {
+                                                                            if (i != 0) {
+                                                                                gendo(lod, lev - table[i].level, table[i].adr);
+                                                                                gendo(lit, 0, 1);
+                                                                                gendo(opr, 0, 3);       // 次栈顶减去栈顶
+                                                                                if (i != 0) {
+                                                                                    gendo(sto, lev - table[i].level, table[i].adr);
+                                                                                    getsymdo;
+                                                                                }
+                                                                                else {
+                                                                                    error(11);
+                                                                                }
+                                                                            }
+                                                                            else {
+                                                                                error(11);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else {
+                                                                    error(104);
+                                                                }
                                                             }
                                                             else {
                                                                 memset(nxtlev, 0,
@@ -1093,6 +1157,7 @@ int statement(bool *fsys, int *ptx, int lev) {
 int expression(bool *fsys, int *ptx, int lev) {
     enum symbol addop;    /*用于保存正负号*/
     bool nxtlev[symnum];
+    int i;
     if (sym == plus || sym == minus)    /*开头的正负号，此时当前表达式被看作一个正的或负的项*/
     {
         addop = sym;
@@ -1103,6 +1168,72 @@ int expression(bool *fsys, int *ptx, int lev) {
         termdo(nxtlev, ptx, lev);    /*处理项*/
         if (addop == minus) {
             gendo(opr, 0, 1);    /*如果开头为负号，生成取负指令*/
+        }
+    }
+    else if (sym == INC) {      // 前++
+        getsymdo;
+        if (sym == ident) {
+            i = position(id, *ptx);                 // 查找变量位置
+            if (i == 0) {
+                error(11);
+            }
+            else {
+                if (table[i].kind != variable) {            // 判断变量类型
+                    error(12);
+                    i = 0;
+                }
+                else {
+                    if (i != 0) {
+                        gendo(lod, lev - table[i].level, table[i].adr);
+                        gendo(lit, 0, 1);
+                        gendo(opr, 0, 2);       // 加
+                        if (i != 0) {
+                            gendo(sto, lev - table[i].level, table[i].adr);         // 栈顶结果写入变量
+                            gendo(lod, lev - table[i].level, table[i].adr);         // 取变量值到栈顶作为表达式结果
+                            getsymdo;
+                        }
+                        else {
+                            error(12);
+                        }
+                    }
+                    else {
+                        error(11);
+                    }
+                }
+            }
+        }
+    }
+    else if (sym == DEC) {      // 前--
+        getsymdo;
+        if (sym == ident) {
+            i = position(id, *ptx);
+            if (i == 0) {
+                error(11);
+            }
+            else {
+                if (table[i].kind != variable) {
+                    error(12);
+                    i = 0;
+                }
+                else {
+                    if (i != 0) {
+                        gendo(lod, lev - table[i].level, table[i].adr);
+                        gendo(lit, 0, 1);
+                        gendo(opr, 0, 3);       // 减
+                        if (i != 0) {
+                            gendo(sto, lev - table[i].level, table[i].adr);
+                            gendo(lod, lev - table[i].level, table[i].adr);
+                            getsymdo;
+                        }
+                        else {
+                            error(12);
+                        }
+                    }
+                    else {
+                        error(11);
+                    }
+                }
+            }
         }
     }
     else    /*此时表达式被看作项的加减*/
