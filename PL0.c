@@ -722,15 +722,35 @@ int statement(bool *fsys, int *ptx, int lev) {
                 getsymdo;
                 if (sym == becomes) {
                     getsymdo;
+                    memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                    expressiondo(nxtlev, ptx, lev);        /*处理赋值符号右侧表达式*/
+                    if (i != 0) {
+                        /*expression将执行一系列指令，但最终结果将会保存在栈顶，执行sto命令完成赋值*/
+                        gendo(sto, lev - table[i].level, table[i].adr);
+                    }
+                }
+                else if (sym == PLUSEQ) {
+                    gendo(lod, lev - table[i].level, table[i].adr);                 // LOD指令，将变量值取到栈顶
+                    getsymdo;
+                    memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                    expressiondo(nxtlev, ptx, lev);                                 // 执行表达式
+                    gendo(opr, 0, 2);                                               // OPR指令，栈顶和次栈顶求和，结果写入栈顶
+                    if (i != 0) {                                                   // i为待写入变量的位置，i为0说明变量不存在
+                        gendo(sto, lev - table[i].level, table[i].adr);             // STO指令，栈顶内容写入变量
+                    }
+                }
+                else if (sym == MINUSEQ) {
+                    gendo(lod, lev - table[i].level, table[i].adr);
+                    getsymdo;
+                    memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                    expressiondo(nxtlev, ptx, lev);
+                    gendo(opr, 0, 3);                                               // OPR指令，次栈顶减去栈顶，结果写入栈顶
+                    if (i != 0) {
+                        gendo(sto, lev - table[i].level, table[i].adr);
+                    }
                 }
                 else {
                     error(13);                        /*没有检测到赋值符号*/
-                }
-                memcpy(nxtlev, fsys, sizeof(bool) * symnum);
-                expressiondo(nxtlev, ptx, lev);        /*处理赋值符号右侧表达式*/
-                if (i != 0) {
-                    /*expression将执行一系列指令，但最终结果将会保存在栈顶，执行sto命令完成赋值*/
-                    gendo(sto, lev - table[i].level, table[i].adr);
                 }
             }
         }//if(i == 0)
