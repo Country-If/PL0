@@ -16,6 +16,7 @@ typedef enum {
 #define amax 2047
 #define levmax 3
 #define cxmax 200
+#define step 2      // 定义FOR语句循环变量的步长
 
 
 enum symbol {

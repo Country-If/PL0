@@ -916,8 +916,85 @@ int statement(bool *fsys, int *ptx, int lev) {
                             }
                             else {
                                 if (sym == FORSYM) {
-                                    printf("keyword: FOR\n");
+//                                    printf("keyword: FOR\n");
                                     getsymdo;
+                                    if (sym != ident) {
+                                        error(101);                             // 自添加报错，FOR后面需要变量
+                                    }
+                                    i = position(id, *ptx);                 // 查找变量位置
+                                    if (i == 0) {
+                                        error(11);
+                                    }
+                                    else {
+                                        if (table[i].kind != variable) {
+                                            error(12);                            /*赋值语句格式错误*/
+                                            i = 0;
+                                        }
+                                        else {
+                                            getsymdo;
+                                            if (sym != becomes) {
+                                                error(13);                        /*没有检测到赋值符号*/
+                                            }
+                                            else {
+                                                getsymdo;
+                                                memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                                                nxtlev[TOSYM] = true;               // 标记下一层的处理
+                                                expressiondo(nxtlev, ptx, lev);     // 执行表达式，结果存放在栈顶
+                                                gendo(sto, lev - table[i].level, table[i].adr);     // STO指令保存初值
+                                                if (sym == TOSYM) {
+                                                    cx1 = cx;           // 保存循环起始位置
+                                                    getsymdo;
+                                                    gendo(lod, lev - table[i].level, table[i].adr);     // 循环变量取到栈顶
+                                                    memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                                                    nxtlev[dosym] = true;       // 标记下一层的处理
+                                                    expressiondo(nxtlev, ptx, lev);     // 执行表达式，结果存放在栈顶
+                                                    gendo(opr, 0, 13);      // 比较次栈顶是否小于等于栈顶，结果进栈
+                                                    cx2 = cx;               // 记录JPC指令的位置，便于后续回填jpc跳转地址
+                                                    gendo(jpc, 0, 0);       // 生成JPC跳转指令，地址暂填0
+                                                    if (sym == dosym) {     // 检测到 do，进行循环体处理
+                                                        getsymdo;
+                                                        statementdo(fsys, ptx, lev);    // 循环体表达式执行
+                                                        gendo(lod, lev - table[i].level, table[i].adr);     // 循环变量取到栈顶
+                                                        gendo(lit, 0, step);            // 步长取到栈顶
+                                                        gendo(opr, 0, 2);               // OPR指令执行次栈顶与栈顶相加
+                                                        gendo(sto, lev - table[i].level, table[i].adr);     // 结果写入循环变量
+                                                        gendo(jmp, 0, cx1);             // 无条件跳转到循环起始位置
+                                                        code[cx2].a = cx;               // JPC跳转地址回填至循环结束位置
+                                                    }
+                                                    else {
+                                                        error(103);             // 自添加报错，缺少do
+                                                    }
+                                                }
+                                                else if (sym == DOWNTOSYM) {
+                                                    cx1 = cx;
+                                                    getsymdo;
+                                                    gendo(lod, lev - table[i].level, table[i].adr);
+                                                    memcpy(nxtlev, fsys, sizeof(bool) * symnum);
+                                                    nxtlev[dosym] = true;
+                                                    expressiondo(nxtlev, ptx, lev);
+                                                    gendo(opr, 0, 11);      // 比较次栈顶是否大于等于栈顶，结果进栈
+                                                    cx2 = cx;
+                                                    gendo(jpc, 0, 0);
+                                                    if (sym == dosym) {
+                                                        getsymdo;
+                                                        statementdo(fsys, ptx, lev);
+                                                        gendo(lod, lev - table[i].level, table[i].adr);
+                                                        gendo(lit, 0, step);
+                                                        gendo(opr, 0, 3);               // OPR指令执行次栈顶减去栈顶
+                                                        gendo(sto, lev - table[i].level, table[i].adr);
+                                                        gendo(jmp, 0, cx1);
+                                                        code[cx2].a = cx;
+                                                    }
+                                                    else {
+                                                        error(103);
+                                                    }
+                                                }
+                                                else {
+                                                    error(102);                 // 自添加报错，缺少TO或者DOWNTO
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 else {
                                     if (sym == TOSYM) {
