@@ -1,0 +1,8 @@
+int i;
+char c;
+begin
+    i := 6;
+    write(i);
+    c := 'x';
+    write(c);
+end.
