@@ -1,0 +1,15 @@
+var a, b;
+begin
+    a := 6;
+    write(a);
+
+    a++;
+    write(a);
+    a--;
+    write(a);
+
+    write(a++);
+    write(a);
+    write(a--);
+    write(a);
+end.
