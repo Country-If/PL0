@@ -463,10 +463,8 @@ int block(int lev, int tx, bool *fsys) {
     int dx;                             /*名字分配到的相对地址*/
     int tx0;                            /*保留初始tx*/
     int cx0;                            /*保留初始cx*/
-    bool nxtlev[symnum];                /*在下级函数的参数中，符号集合均为值参，
-										  但由于使用数组实现，传递进来的是指针，
-										  为防止下级函数改变上级函数的集合，开
-										  辟新的空间传递给下级函数*/
+    bool nxtlev[symnum];                /*在下级函数的参数中，符号集合均为值参，但由于使用数组实现，传递进来的是指针，
+										  为防止下级函数改变上级函数的集合，开辟新的空间传递给下级函数*/
     dx = 3;
     tx0 = tx;                             /*记录本层名字的初始位置*/
     table[tx].adr = cx;
@@ -479,8 +477,7 @@ int block(int lev, int tx, bool *fsys) {
         {
             getsymdo;
             do {
-                constdeclarationdo(&tx, lev, &dx);        /*dx的值会被constdeclaration改变，使用
-														  指针*/
+                constdeclarationdo(&tx, lev, &dx);        /*dx的值会被constdeclaration改变，使用指针*/
                 while (sym == comma) {
                     getsymdo;
                     constdeclarationdo(&tx, lev, &dx);
@@ -1051,7 +1048,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                     getsymdo;
                                                 }
                                                 else {
-                                                    if (sym == INC) {
+                                                    if (sym == INC) {       // 前++
 //                                                        printf("keyword: ++\n");
                                                         getsymdo;
                                                         if (sym == ident) {
@@ -1066,11 +1063,13 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                                 }
                                                                 else {
                                                                     if (i != 0) {
-                                                                        gendo(lod, lev - table[i].level, table[i].adr);     // 取变量值到栈顶
-                                                                        gendo(lit, 0, 1);                                   // 取常数1到栈顶
-                                                                        gendo(opr, 0, 2);                                   // 次栈顶与栈顶相加
+                                                                        // LOD指令取变量值到栈顶
+                                                                        gendo(lod, lev - table[i].level, table[i].adr);
+                                                                        gendo(lit, 0, 1);              // 取常数1到栈顶
+                                                                        gendo(opr, 0,2);               // 次栈顶与栈顶相加
                                                                         if (i != 0) {
-                                                                            gendo(sto, lev - table[i].level, table[i].adr); // 栈顶结果写入变量
+                                                                            // 栈顶结果写入变量
+                                                                            gendo(sto, lev - table[i].level, table[i].adr);
                                                                             getsymdo;
                                                                         }
                                                                         else {
@@ -1093,7 +1092,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                                                             getsymdo;
                                                         }
                                                         else {
-                                                            if (sym == DEC) {
+                                                            if (sym == DEC) {       // 前--
 //                                                                printf("keyword: --\n");
                                                                 getsymdo;
                                                                 if (sym == ident) {
@@ -1313,7 +1312,7 @@ int factor(bool *fsys, int *ptx, int lev) {
                 }
             }
             getsymdo;
-            if (sym == INC || sym == DEC) {
+            if (sym == INC || sym == DEC) {         // 后++ --
                 gendo(lit, 0, 1);                                       // 取常数1放入栈顶
                 if (sym == INC) {
                     gendo(opr, 0, 2);                                   // 次栈顶与栈顶相加
@@ -1382,7 +1381,6 @@ int condition(bool *fsys, int *ptx, int lev) {
         nxtlev[neq] = true;
         nxtlev[lss] = true;
         nxtlev[leq] = true;
-
         nxtlev[gtr] = true;
         nxtlev[geq] = true;
         expressiondo(nxtlev, ptx, lev);
@@ -1425,7 +1423,6 @@ void interpret() {
     int p, b, t;               /*指令指针，指令基址，栈顶指针*/
     struct instruction i;   /*存放当前指令*/
     int s[stacksize];       /*栈*/
-
 
     printf("start pl0\n");
     t = 0;
