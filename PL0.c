@@ -344,6 +344,7 @@ int getsym() {
                     }
                 }
                 else {
+                    sym = nul;
                     error(105);
                 }
                 getchdo;
