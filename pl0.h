@@ -28,9 +28,9 @@ enum symbol {
     writesym, readsym, dosym, callsym, constsym,    // 30
     varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
     PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,           // 40
-    ELSESYM, intsym, charsym,                       // 43
+    ELSESYM, intsym, charsym, colon,                // 44
 };
-#define symnum 43       // sym数量
+#define symnum 44       // sym数量
 
 /*名字表中的类型*/
 
@@ -40,6 +40,7 @@ enum object {
     procedur,
     int_type,
     char_type,
+    array_type,
 };
 
 /*虚拟机代码*/
@@ -47,9 +48,10 @@ enum object {
 enum fct {
     lit, opr, lod,
     sto, cal, inte,
-    jmp, jpc,
+    jmp, jpc, sta,  // sta: store array
+    lda, ack,       // lda: load arr; ack: array check
 };
-#define fctnum 8
+#define fctnum 11
 
 /*虚拟机代码结构*/
 
@@ -90,6 +92,7 @@ struct tablestruct {
     int level;          /* 所处层，仅const不使用*/
     int adr;            /* 地址，仅const不使用 */
     int size;           /* 需要分配的数据区空间，仅procedure使用 */
+    int base_id;        // 数组基址
 };
 struct tablestruct table[txmax]; /* 名字表 */
 FILE *fin;
