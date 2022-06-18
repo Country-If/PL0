@@ -1,0 +1,6 @@
+var arr(0:5), i;
+begin
+    FOR i := 0 TO 4 do arr(i) := i;
+    FOR i := 0 TO 4 do read(arr(i + 1));
+    FOR i := 0 TO 4 do write(arr(i), arr(i + 1));
+end.
