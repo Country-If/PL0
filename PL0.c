@@ -122,17 +122,19 @@ void init() {
     strcpy(&(word[4][0]), "TO");
     strcpy(&(word[5][0]), "begin");
     strcpy(&(word[6][0]), "call");
-    strcpy(&(word[7][0]), "const");
-    strcpy(&(word[8][0]), "do");
-    strcpy(&(word[9][0]), "end");
-    strcpy(&(word[10][0]), "if");
-    strcpy(&(word[11][0]), "odd");
-    strcpy(&(word[12][0]), "procedure");
-    strcpy(&(word[13][0]), "read");
-    strcpy(&(word[14][0]), "then");
-    strcpy(&(word[15][0]), "var");
-    strcpy(&(word[16][0]), "while");
-    strcpy(&(word[17][0]), "write");
+    strcpy(&(word[7][0]), "char");
+    strcpy(&(word[8][0]), "const");
+    strcpy(&(word[9][0]), "do");
+    strcpy(&(word[10][0]), "end");
+    strcpy(&(word[11][0]), "if");
+    strcpy(&(word[12][0]), "int");
+    strcpy(&(word[13][0]), "odd");
+    strcpy(&(word[14][0]), "procedure");
+    strcpy(&(word[15][0]), "read");
+    strcpy(&(word[16][0]), "then");
+    strcpy(&(word[17][0]), "var");
+    strcpy(&(word[18][0]), "while");
+    strcpy(&(word[19][0]), "write");
 
     /* 设置保留字符号 */
     wsym[0] = DOWNTOSYM;
@@ -142,17 +144,19 @@ void init() {
     wsym[4] = TOSYM;
     wsym[5] = beginsym;
     wsym[6] = callsym;
-    wsym[7] = constsym;
-    wsym[8] = dosym;
-    wsym[9] = endsym;
-    wsym[10] = ifsym;
-    wsym[11] = oddsym;
-    wsym[12] = procsym;
-    wsym[13] = readsym;
-    wsym[14] = thensym;
-    wsym[15] = varsym;
-    wsym[16] = whilesym;
-    wsym[17] = writesym;
+    wsym[7] = charsym;
+    wsym[8] = constsym;
+    wsym[9] = dosym;
+    wsym[10] = endsym;
+    wsym[11] = ifsym;
+    wsym[12] = intsym;
+    wsym[13] = oddsym;
+    wsym[14] = procsym;
+    wsym[15] = readsym;
+    wsym[16] = thensym;
+    wsym[17] = varsym;
+    wsym[18] = whilesym;
+    wsym[19] = writesym;
 
 
     /* 设置指令名称 */
@@ -188,6 +192,8 @@ void init() {
     facbegsys[ident] = true;
     facbegsys[number] = true;
     facbegsys[lparen] = true;
+    facbegsys[intsym] = true;
+    facbegsys[charsym] = true;
 }
 
 /*
@@ -310,7 +316,8 @@ int getsym() {
         if (ch >= '0' && ch <= '9') {                /*检测是否为数字：以0~9开头*/
             k = 0;
             num = 0;
-            sym = number;
+//            sym = number;
+            sym = intsym;
             do {
                 num = 10 * num + ch - '0';
                 k++;
@@ -322,81 +329,102 @@ int getsym() {
             }
         }
         else {
-            if (ch == ':') {  /*检测赋值符号*/
+            if ((int) ch == 39) {        // 字符以 ' 开头
                 getchdo;
-                if (ch == '=') {
-                    sym = becomes;
+                if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') {
+                    num = (int)ch;
                     getchdo;
+                    if ((int)ch == 39) {
+                        sym = charsym;
+                    }
+                    else {
+                        num = 0;
+                        sym = nul;
+                        error(105);         // 自定义报错，字符类型不完整
+                    }
                 }
                 else {
-                    sym = nul;    /*不能识别的符号*/
+                    error(105);
                 }
+                getchdo;
             }
             else {
-                if (ch == '<') {   /*检测小于或小于等于符号*/
+                if (ch == ':') {  /*检测赋值符号*/
                     getchdo;
                     if (ch == '=') {
-                        sym = leq;
-                        getchdo;
-                    }
-                    else if (ch == '>') {
-                        sym = neq;
+                        sym = becomes;
                         getchdo;
                     }
                     else {
-                        sym = lss;
+                        sym = nul;    /*不能识别的符号*/
                     }
                 }
                 else {
-                    if (ch == '>')   /*检测大于或大于等于符号*/
-                    {
+                    if (ch == '<') {   /*检测小于或小于等于符号*/
                         getchdo;
                         if (ch == '=') {
-                            sym = geq;
+                            sym = leq;
+                            getchdo;
+                        }
+                        else if (ch == '>') {
+                            sym = neq;
                             getchdo;
                         }
                         else {
-                            sym = gtr;
+                            sym = lss;
                         }
                     }
                     else {
-                        if (ch == '+') {
+                        if (ch == '>')   /*检测大于或大于等于符号*/
+                        {
                             getchdo;
-                            if (ch == '=') {    // +=
-                                sym = PLUSEQ;
+                            if (ch == '=') {
+                                sym = geq;
                                 getchdo;
                             }
-                            else if (ch == '+') {      // ++
-                                sym = INC;
-                                getchdo;
-                            }
-                            else {      // +
-                                sym = plus;
+                            else {
+                                sym = gtr;
                             }
                         }
                         else {
-                            if (ch == '-') {
+                            if (ch == '+') {
                                 getchdo;
-                                if (ch == '=') {    // -=
-                                    sym = MINUSEQ;
+                                if (ch == '=') {    // +=
+                                    sym = PLUSEQ;
                                     getchdo;
                                 }
-                                else if (ch == '-') {      // --
-                                    sym = DEC;
+                                else if (ch == '+') {      // ++
+                                    sym = INC;
                                     getchdo;
                                 }
-                                else {      // -
-                                    sym = minus;
+                                else {      // +
+                                    sym = plus;
                                 }
                             }
                             else {
-                                sym = ssym[ch]; /*当符号不满足上述条件时，全部按照单字符符号处理*/
-                                //getchdo;
-                                //richard;
-                                if (sym != period) {
+                                if (ch == '-') {
                                     getchdo;
+                                    if (ch == '=') {    // -=
+                                        sym = MINUSEQ;
+                                        getchdo;
+                                    }
+                                    else if (ch == '-') {      // --
+                                        sym = DEC;
+                                        getchdo;
+                                    }
+                                    else {      // -
+                                        sym = minus;
+                                    }
                                 }
-                                //end richard
+                                else {
+                                    sym = ssym[ch]; /*当符号不满足上述条件时，全部按照单字符符号处理*/
+                                    //getchdo;
+                                    //richard;
+                                    if (sym != period) {
+                                        getchdo;
+                                    }
+                                    //end richard
+                                }
                             }
                         }
                     }
@@ -508,6 +536,41 @@ int block(int lev, int tx, bool *fsys) {
                 }
             } while (sym == ident);
         }
+
+        if (sym == intsym) {
+            getsymdo;
+            do {
+                intdeclarationdo(&tx, lev, &dx);
+                while (sym == comma) {
+                    getsymdo;
+                    intdeclarationdo(&tx, lev, &dx);
+                }
+                if (sym == semicolon) {
+                    getsymdo;
+                }
+                else {
+                    error(5);
+                }
+            } while (sym == ident);
+        }
+
+        if (sym == charsym) {
+            getsymdo;
+            do {
+                chardeclarationdo(&tx, lev, &dx);
+                while (sym == comma) {
+                    getsymdo;
+                    chardeclarationdo(&tx, lev, &dx);
+                }
+                if (sym == semicolon) {
+                    getsymdo;
+                }
+                else {
+                    error(5);
+                }
+            } while (sym == ident);
+        }
+
         while (sym == procsym)                         /*收到过程声明符号，开始处理过程声明*/
         {
             getsymdo;
@@ -556,8 +619,20 @@ int block(int lev, int tx, bool *fsys) {
         if (tx0 + 1 > tx) {
             printf("NULL\n");
         }
-        for (int i = tx0 + 1; i <= tx; i++) {
+        for (i = tx0 + 1; i <= tx; i++) {
             switch (table[i].kind) {
+                case int_type:
+                    printf("%d int %s ", i, table[i].name);
+                    printf("lev=%d addr= %d\n", table[i].level, table[i].adr);
+                    fprintf(fas, "%d int %s ", i, table[i].name);
+                    fprintf(fas, "lev=%d addr= %d\n", table[i].level, table[i].adr);
+                    break;
+                case char_type:
+                    printf("%d char %s ", i, table[i].name);
+                    printf("lev=%d addr= %d\n", table[i].level, table[i].adr);
+                    fprintf(fas, "%d char %s ", i, table[i].name);
+                    fprintf(fas, "lev=%d addr= %d\n", table[i].level, table[i].adr);
+                    break;
                 case constant:
                     printf("%d const %s ", i, table[i].name);
                     printf("val= %d\n", table[i].val);
@@ -612,6 +687,8 @@ void enter(enum object k, int *ptx, int lev, int *pdx) {
             }
             table[(*ptx)].val = num;
             break;
+        case int_type:
+        case char_type:
         case variable:                        /*变量名字*/
             table[(*ptx)].level = lev;
             table[(*ptx)].adr = (*pdx);
@@ -620,6 +697,7 @@ void enter(enum object k, int *ptx, int lev, int *pdx) {
         case procedur:                        /*过程名字*/
             table[(*ptx)].level = lev;
             break;
+        default:;
     }
 }
 
@@ -638,6 +716,28 @@ int position(char *idt, int tx) {
         i--;
     }
     return i;
+}
+
+int intdeclaration(int *ptx, int lev, int *pdx){
+    if (sym == ident) {
+        enter(int_type, ptx, lev, pdx); //填写名字表
+        getsymdo;
+    }
+    else {
+        error(4);   /* int后应是标识 */
+    }
+    return 0;
+}
+
+int chardeclaration(int *ptx, int lev, int *pdx) {
+    if (sym == ident) {
+        enter(char_type, ptx, lev, pdx); //填写名字表
+        getsymdo;
+    }
+    else {
+        error(4);   /* char后应是标识 */
+    }
+    return 0;
 }
 
 /*
@@ -681,7 +781,6 @@ int vardeclaration(int *ptx, int lev, int *pdx) {
         error(4);   /* var后应是标识 */
     }
     return 0;
-
 }
 
 /*
@@ -711,7 +810,7 @@ int statement(bool *fsys, int *ptx, int lev) {
             error(11);
         }
         else {
-            if (table[i].kind != variable) {
+            if (table[i].kind != variable && table[i].kind != int_type && table[i].kind != char_type) {
                 error(12);                            /*赋值语句格式错误*/
                 i = 0;
             }
@@ -833,9 +932,23 @@ int statement(bool *fsys, int *ptx, int lev) {
                         memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                         nxtlev[rparen] = true;
                         nxtlev[comma] = true;    /*write的后跟符号为）or,*/
-                        expressiondo(nxtlev, ptx, lev);/*调用表达式处理，此处与read不同，
-												read为给变量赋值*/
-                        gendo(opr, 0, 14);        /*生成输出指令，输出栈顶的值*/
+                        expressiondo(nxtlev, ptx, lev);     /*调用表达式处理，此处与read不同，read为给变量赋值*/
+                        i = position(id, *ptx);
+                        if (i == 0) {
+                            error(11);
+                        }
+                        else {
+                            switch (table[i].kind) {
+                                case int_type:
+                                    gendo(opr, 0, 14);
+                                    break;
+                                case char_type:
+                                    gendo(opr, 0, 17);
+                                    break;
+                                default:
+                                    gendo(opr, 0, 14);        /*生成输出指令，输出栈顶的值*/
+                            }
+                        }
                     } while (sym == comma);
                     if (sym != rparen) {
                         error(33);                /*write（）中应为完整表达式*/
@@ -904,6 +1017,10 @@ int statement(bool *fsys, int *ptx, int lev) {
                         if (sym == beginsym)    /*准备按照复合语句处理*/
                         {
                             getsymdo;
+                            if (sym == intsym || sym == charsym) {
+                                sym = ident;
+                                getsymdo;
+                            }
                             memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                             nxtlev[semicolon] = true;
                             nxtlev[endsym] = true;    /*后跟符号为分号或end*/
@@ -1303,6 +1420,8 @@ int factor(bool *fsys, int *ptx, int lev) {
                     case constant:                    /*名字为常量*/
                         gendo(lit, 0, table[i].val);/*直接把常量的值入栈*/
                         break;
+                    case int_type:
+                    case char_type:
                     case variable:                    /*名字为变量*/
                         gendo(lod, lev - table[i].level, table[i].adr);/*找到变量地址并将其值入栈*/
                         break;
@@ -1332,7 +1451,7 @@ int factor(bool *fsys, int *ptx, int lev) {
             }
         }
         else {
-            if (sym == number)                            /*因子为数*/
+            if (sym == number || sym == intsym || sym == charsym)
             {
                 if (num > amax) {
                     error(31);
@@ -1505,6 +1624,11 @@ void interpret() {
                         scanf("%d", &(s[t]));
                         fprintf(fa2, "%d\n", s[t]);
                         t++;
+                        break;
+                    case 17:
+                        printf("%c", (char)s[t - 1]);
+                        fprintf(fa2, "%c", (char)s[t - 1]);
+                        t--;
                         break;
                 }
                 break;

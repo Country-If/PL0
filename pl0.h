@@ -9,7 +9,7 @@ typedef enum {
 } bool;
 
 
-#define norw 18         // sym中的保留字数量(*sym/*SYM)
+#define norw 20         // sym中的保留字数量(*sym/*SYM)
 #define txmax 100
 #define nmax 14
 #define al 10
@@ -27,10 +27,10 @@ enum symbol {
     beginsym, endsym, ifsym, thensym, whilesym,     // 25
     writesym, readsym, dosym, callsym, constsym,    // 30
     varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
-    PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,    // 40
-    ELSESYM,    // 41
+    PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,           // 40
+    ELSESYM, intsym, charsym,                       // 43
 };
-#define symnum 41       // sym数量
+#define symnum 43       // sym数量
 
 /*名字表中的类型*/
 
@@ -38,6 +38,8 @@ enum object {
     constant,
     variable,
     procedur,
+    int_type,
+    char_type,
 };
 
 /*虚拟机代码*/
@@ -108,6 +110,8 @@ int err;                /* 错误计数器 */
 #define statementdo(a, b, c)         if(-1==statement(a,b,c)) return -1
 #define constdeclarationdo(a, b, c)  if(-1==constdeclaration(a,b,c)) return -1
 #define vardeclarationdo(a, b, c)    if(-1==vardeclaration(a,b,c)) return -1
+#define intdeclarationdo(a, b, c)    if(-1==intdeclaration(a,b,c)) return -1
+#define chardeclarationdo(a, b, c)    if(-1==chardeclaration(a,b,c)) return -1
 
 void error(int n);
 
@@ -146,6 +150,10 @@ int statement(bool *fsys, int *ptx, int lev);
 void listcode(int cx0);
 
 int vardeclaration(int *ptx, int lev, int *pdx);
+
+int intdeclaration(int *ptx, int lev, int *pdx);
+
+int chardeclaration(int *ptx, int lev, int *pdx);
 
 int constdeclaration(int *ptx, int lev, int *pdx);
 
