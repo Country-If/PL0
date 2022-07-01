@@ -9,14 +9,14 @@ typedef enum {
 } bool;
 
 
-#define norw 20         // symä¸­çš„ä¿ç•™å­—æ•°é‡(*sym/*SYM)
+#define norw 20         // symÖĞµÄ±£Áô×ÖÊıÁ¿(*sym/*SYM)
 #define txmax 100
 #define nmax 14
 #define al 10
 #define amax 2047
 #define levmax 3
 #define cxmax 200
-#define step 2      // å®šä¹‰FORè¯­å¥å¾ªç¯å˜é‡çš„æ­¥é•¿
+#define step 2      // ¶¨ÒåFORÓï¾äÑ­»·±äÁ¿µÄ²½³¤
 
 
 enum symbol {
@@ -30,9 +30,9 @@ enum symbol {
     PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,           // 40
     ELSESYM, intsym, charsym, colon,                // 44
 };
-#define symnum 44       // symæ•°é‡
+#define symnum 44       // symÊıÁ¿
 
-/*åå­—è¡¨ä¸­çš„ç±»å‹*/
+/*Ãû×Ö±íÖĞµÄÀàĞÍ*/
 
 enum object {
     constant,
@@ -43,7 +43,7 @@ enum object {
     array_type,
 };
 
-/*è™šæ‹Ÿæœºä»£ç */
+/*ĞéÄâ»ú´úÂë*/
 
 enum fct {
     lit, opr, lod,
@@ -53,55 +53,55 @@ enum fct {
 };
 #define fctnum 11
 
-/*è™šæ‹Ÿæœºä»£ç ç»“æ„*/
+/*ĞéÄâ»ú´úÂë½á¹¹*/
 
 struct instruction {
-    enum fct f;                /*è™šæ‹Ÿæœºä»£ç æŒ‡ä»¤*/
-    int l;                    /*å¼•ç”¨å±‚ä¸ç”Ÿå‘½å±‚çš„å±‚æ¬¡å·®*/
-    int a;                    /*æ ¹æ®fçš„ä¸åŒè€Œä¸åŒ*/
+    enum fct f;                /*ĞéÄâ»ú´úÂëÖ¸Áî*/
+    int l;                    /*ÒıÓÃ²ãÓëÉúÃü²ãµÄ²ã´Î²î*/
+    int a;                    /*¸ù¾İfµÄ²»Í¬¶ø²»Í¬*/
 };
 
 
-FILE *fas;              /* è¾“å‡ºåå­—è¡¨ */
-FILE *fa;               /* è¾“å‡ºè™šæ‹Ÿæœºä»£ç  */
-FILE *fa1;              /* è¾“å‡ºæºæ–‡ä»¶åŠå…¶å„è¡Œå¯¹åº”çš„é¦–åœ°å€ */
-FILE *fa2;              /* è¾“å‡ºç»“æœ */
-bool listswitch;        /* æ˜¾ç¤ºè™šæ‹Ÿæœºä»£ç ä¸å¦ */
-bool tableswitch;        /* æ˜¾ç¤ºåå­—è¡¨ä¸å¦ */
-char ch;                /* è·å–å­—ç¬¦çš„ç¼“å†²åŒºï¼Œgetchä½¿ç”¨ */
-enum symbol sym;        /* å½“å‰çš„ç¬¦å· */
-char id[al + 1];          /* å½“å‰identï¼Œå¤šå‡ºçš„ä¸€ä¸ªå­—èŠ‚ç”¨äºå­˜æ”¾0 */
-int num;                /* å½“å‰number */
-int cc, ll;             /* getchä½¿ç”¨çš„è®¡æ•°å™¨ï¼Œccè¡¨ç¤ºå½“å‰å­—ç¬¦ï¼ˆchï¼‰çš„ä½ç½® */
-int cx;                 /* è™šæ‹Ÿæœºä»£ç æŒ‡é’ˆï¼Œå–å€¼èŒƒå›´[0,cxmax-1] */
-char line[81];          /* è¯»å–è¡Œç¼“å†²åŒº */
-char a[al + 1];           /* ä¸´æ—¶ç¬¦å·ï¼Œå¤šå‡ºçš„ä¸€ä¸ªå­—èŠ‚ç”¨äºå­˜æ”¾0 */
-struct instruction code[cxmax]; /* å­˜æ”¾è™šæ‹Ÿæœºä»£ç çš„æ•°ç»„*/
-char word[norw][al];    /* ä¿ç•™å­— */
-enum symbol wsym[norw]; /* ä¿ç•™å­—å¯¹åº”çš„ç¬¦å·å€¼ */
-enum symbol ssym[256];  /* å•å­—ç¬¦çš„ç¬¦å·å€¼ */
-char mnemonic[fctnum][5]; /* è™šæ‹Ÿæœºä»£ç æŒ‡ä»¤åç§° */
-bool declbegsys[symnum];/* è¡¨ç¤ºå£°æ˜å¼€å§‹çš„ç¬¦å·é›†åˆ */
-bool statbegsys[symnum];/* è¡¨ç¤ºè¯­å¥å¼€å§‹çš„ç¬¦å·é›†åˆ */
-bool facbegsys[symnum]; /* è¡¨ç¤ºå› å­å¼€å§‹çš„ç¬¦å·é›†åˆ */
-/* åå­—è¡¨ç»“æ„ */
+FILE *fas;              /* Êä³öÃû×Ö±í */
+FILE *fa;               /* Êä³öĞéÄâ»ú´úÂë */
+FILE *fa1;              /* Êä³öÔ´ÎÄ¼ş¼°Æä¸÷ĞĞ¶ÔÓ¦µÄÊ×µØÖ· */
+FILE *fa2;              /* Êä³ö½á¹û */
+bool listswitch;        /* ÏÔÊ¾ĞéÄâ»ú´úÂëÓë·ñ */
+bool tableswitch;        /* ÏÔÊ¾Ãû×Ö±íÓë·ñ */
+char ch;                /* »ñÈ¡×Ö·ûµÄ»º³åÇø£¬getchÊ¹ÓÃ */
+enum symbol sym;        /* µ±Ç°µÄ·ûºÅ */
+char id[al + 1];          /* µ±Ç°ident£¬¶à³öµÄÒ»¸ö×Ö½ÚÓÃÓÚ´æ·Å0 */
+int num;                /* µ±Ç°number */
+int cc, ll;             /* getchÊ¹ÓÃµÄ¼ÆÊıÆ÷£¬cc±íÊ¾µ±Ç°×Ö·û£¨ch£©µÄÎ»ÖÃ */
+int cx;                 /* ĞéÄâ»ú´úÂëÖ¸Õë£¬È¡Öµ·¶Î§[0,cxmax-1] */
+char line[81];          /* ¶ÁÈ¡ĞĞ»º³åÇø */
+char a[al + 1];           /* ÁÙÊ±·ûºÅ£¬¶à³öµÄÒ»¸ö×Ö½ÚÓÃÓÚ´æ·Å0 */
+struct instruction code[cxmax]; /* ´æ·ÅĞéÄâ»ú´úÂëµÄÊı×é*/
+char word[norw][al];    /* ±£Áô×Ö */
+enum symbol wsym[norw]; /* ±£Áô×Ö¶ÔÓ¦µÄ·ûºÅÖµ */
+enum symbol ssym[256];  /* µ¥×Ö·ûµÄ·ûºÅÖµ */
+char mnemonic[fctnum][5]; /* ĞéÄâ»ú´úÂëÖ¸ÁîÃû³Æ */
+bool declbegsys[symnum];/* ±íÊ¾ÉùÃ÷¿ªÊ¼µÄ·ûºÅ¼¯ºÏ */
+bool statbegsys[symnum];/* ±íÊ¾Óï¾ä¿ªÊ¼µÄ·ûºÅ¼¯ºÏ */
+bool facbegsys[symnum]; /* ±íÊ¾Òò×Ó¿ªÊ¼µÄ·ûºÅ¼¯ºÏ */
+/* Ãû×Ö±í½á¹¹ */
 struct tablestruct {
-    char name[al];      /* åå­— */
-    enum object kind;   /* ç±»å‹ï¼šconstï¼Œvarï¼Œarray or procedure */
-    int val;            /* æ•°å€¼ï¼Œä»…constä½¿ç”¨ */
-    int level;          /* æ‰€å¤„å±‚ï¼Œä»…constä¸ä½¿ç”¨*/
-    int adr;            /* åœ°å€ï¼Œä»…constä¸ä½¿ç”¨ */
-    int size;           /* éœ€è¦åˆ†é…çš„æ•°æ®åŒºç©ºé—´ï¼Œä»…procedureä½¿ç”¨ */
-    int base_id;        // æ•°ç»„åŸºå€
+    char name[al];      /* Ãû×Ö */
+    enum object kind;   /* ÀàĞÍ£ºconst£¬var£¬array or procedure */
+    int val;            /* ÊıÖµ£¬½öconstÊ¹ÓÃ */
+    int level;          /* Ëù´¦²ã£¬½öconst²»Ê¹ÓÃ*/
+    int adr;            /* µØÖ·£¬½öconst²»Ê¹ÓÃ */
+    int size;           /* ĞèÒª·ÖÅäµÄÊı¾İÇø¿Õ¼ä£¬½öprocedureÊ¹ÓÃ */
+    int base_id;        // Êı×é»ùÖ·
 };
-struct tablestruct table[txmax]; /* åå­—è¡¨ */
+struct tablestruct table[txmax]; /* Ãû×Ö±í */
 FILE *fin;
 FILE *fout;
 char fname[al];
-int err;                /* é”™è¯¯è®¡æ•°å™¨ */
+int err;                /* ´íÎó¼ÆÊıÆ÷ */
 
 
-/* å½“å‡½æ•°ä¸­ä¼šå‘ç”Ÿfatal error æ—¶ï¼Œè¿”å›-1å‘ŠçŸ¥è°ƒç”¨å®ƒçš„å‡½æ•°ï¼Œæœ€ç»ˆé€€å‡ºç¨‹åº */
+/* µ±º¯ÊıÖĞ»á·¢Éúfatal error Ê±£¬·µ»Ø-1¸æÖªµ÷ÓÃËüµÄº¯Êı£¬×îÖÕÍË³ö³ÌĞò */
 #define getsymdo                   if(-1==getsym()) return -1
 #define getchdo                    if(-1==getch()) return -1
 #define testdo(a, b, c)              if(-1==test(a,b,c)) return -1
