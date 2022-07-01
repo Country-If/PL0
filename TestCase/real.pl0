@@ -1,0 +1,7 @@
+real a, b;
+begin
+    a := 54.36;
+    write(a);
+    read(b);
+    write(b);
+end.
