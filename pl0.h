@@ -9,7 +9,7 @@ typedef enum {
 } bool;
 
 
-#define norw 20         // sym中的保留字数量(*sym/*SYM)
+#define norw 21         // sym中的保留字数量(*sym/*SYM)
 #define txmax 100
 #define nmax 14
 #define al 10
@@ -28,9 +28,9 @@ enum symbol {
     writesym, readsym, dosym, callsym, constsym,    // 30
     varsym, procsym, FORSYM, TOSYM, DOWNTOSYM,      // 35
     PLUSEQ, MINUSEQ, INC, DEC, RETURNSYM,           // 40
-    ELSESYM, intsym, charsym, colon,                // 44
+    ELSESYM, intsym, charsym, colon, realsym,       // 45
 };
-#define symnum 44       // sym数量
+#define symnum 45      // sym数量
 
 /*名字表中的类型*/
 
@@ -41,6 +41,7 @@ enum object {
     int_type,
     char_type,
     array_type,
+    real_type,
 };
 
 /*虚拟机代码*/
@@ -49,9 +50,10 @@ enum fct {
     lit, opr, lod,
     sto, cal, inte,
     jmp, jpc, sta,  // sta: store array
-    lda, ack,       // lda: load arr; ack: array check
+    lda, ack, str,  // lda: load arr; ack: array check; str: store real
+    ldr,            // ldr: load real
 };
-#define fctnum 11
+#define fctnum 13
 
 /*虚拟机代码结构*/
 
@@ -72,6 +74,7 @@ char ch;                /* 获取字符的缓冲区，getch使用 */
 enum symbol sym;        /* 当前的符号 */
 char id[al + 1];          /* 当前ident，多出的一个字节用于存放0 */
 int num;                /* 当前number */
+int int_part, dec_part;     // 整数部分，小数部分
 int cc, ll;             /* getch使用的计数器，cc表示当前字符（ch）的位置 */
 int cx;                 /* 虚拟机代码指针，取值范围[0,cxmax-1] */
 char line[81];          /* 读取行缓冲区 */
@@ -115,6 +118,7 @@ int err;                /* 错误计数器 */
 #define vardeclarationdo(a, b, c)    if(-1==vardeclaration(a,b,c)) return -1
 #define intdeclarationdo(a, b, c)    if(-1==intdeclaration(a,b,c)) return -1
 #define chardeclarationdo(a, b, c)    if(-1==chardeclaration(a,b,c)) return -1
+#define realdeclarationdo(a, b, c)    if(-1==realdeclaration(a,b,c)) return -1
 
 void error(int n);
 
@@ -157,6 +161,8 @@ int vardeclaration(int *ptx, int lev, int *pdx);
 int intdeclaration(int *ptx, int lev, int *pdx);
 
 int chardeclaration(int *ptx, int lev, int *pdx);
+
+int realdeclaration(int *ptx, int lev, int *pdx);
 
 int constdeclaration(int *ptx, int lev, int *pdx);
 
