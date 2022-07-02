@@ -936,6 +936,14 @@ int statement(bool *fsys, int *ptx, int lev) {
                 getsymdo;
                 if (sym == becomes) {
                     getsymdo;
+                    if (i != 0 && table[i].kind == real_type && sym != realsym) {
+                        if (sym == number || sym == intsym) {
+                            sym = realsym;                            // 非real型数据将数据按照real型数据处理
+                        }
+                        else {
+                            error(109);                            // 自定义报错，赋值数据与变量类型不符
+                        }
+                    }
                     memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                     expressiondo(nxtlev, ptx, lev);        /*处理赋值符号右侧表达式*/
                     if (i != 0) {
