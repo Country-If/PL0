@@ -1,6 +1,6 @@
 real a, b;
 begin
-    a := 54.36;
+    a := 19;
     write(a);
     read(b);
     write(b);
