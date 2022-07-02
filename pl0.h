@@ -75,6 +75,7 @@ enum symbol sym;        /* 当前的符号 */
 char id[al + 1];          /* 当前ident，多出的一个字节用于存放0 */
 int num;                /* 当前number */
 int int_part, dec_part;     // 整数部分，小数部分
+int cur_array_base_id;      // 当前数组基址
 int cc, ll;             /* getch使用的计数器，cc表示当前字符（ch）的位置 */
 int cx;                 /* 虚拟机代码指针，取值范围[0,cxmax-1] */
 char line[81];          /* 读取行缓冲区 */

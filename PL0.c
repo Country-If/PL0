@@ -861,7 +861,7 @@ int vardeclaration(int *ptx, int lev, int *pdx) {
                 default:
                     error(106);     // 自定义报错，下标类型或范围错误
             }
-            table[(*ptx)].adr -= begin_id;          // 修改数组占用内存空间的起始地址
+//            table[(*ptx)].adr -= begin_id;          // 修改数组占用内存空间的起始地址 -> bug
             table[(*ptx)].base_id = begin_id;       // 修改数组的基址(下界)
             getsymdo;
             if (sym != colon) {
@@ -887,7 +887,7 @@ int vardeclaration(int *ptx, int lev, int *pdx) {
                 getsymdo;
                 if (sym == rparen) {
                     table[(*ptx)].kind = array_type;            // 修改数据类型为数组
-                    (*pdx) += (end_id - begin_id + 1);          // 修改空闲内存起始地址
+                    (*pdx) += (end_id - begin_id);          // 修改空闲内存起始地址
                 }
                 else {
                     error(108);     // 自定义报错，缺失左括号或者右括号
@@ -966,6 +966,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                             getsymdo;       // 获取赋值号右边的值
                             memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                             expressiondo(nxtlev, ptx, lev);                 // 计算赋值号右边的表达式，并将结果写入栈顶
+                            cur_array_base_id = table[i].base_id;               // 设置当前数组基址
                             gendo(sta, lev - table[i].level, table[i].adr);     // 将栈顶值写入数组对应下标位置
                         }
                         else {
@@ -1066,6 +1067,7 @@ int statement(bool *fsys, int *ptx, int lev) {
                                 gendo(ack, table[i].base_id, table[i].size);    // 检查数组是否越界
                                 gendo(jpc, 0, 0);                               // 对栈顶布尔值进行判断
                                 gendo(opr, 0, 16);                              // 从键盘读数据到栈顶
+                                cur_array_base_id = table[i].base_id;
                                 gendo(sta, lev - table[i].level, table[i].adr); // 将栈顶数据写入数组对应下标位置
                             }
                             else {
@@ -1611,6 +1613,7 @@ int factor(bool *fsys, int *ptx, int lev) {
                             memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                             nxtlev[rparen] = true;
                             expressiondo(nxtlev, ptx, lev);                 // 计算数组下标并将下标写入栈顶
+                            cur_array_base_id = table[i].base_id;
                             gendo(lda, lev - table[i].level, table[i].adr); // 将数组对应下标的数据取到栈顶
                         }
                         else {
@@ -1753,11 +1756,11 @@ void interpret() {
         switch (i.f) {
             case sta:
                 t--;
-                s[base(i.l, s, b) + i.a + s[t - 1]] = s[t];
+                s[base(i.l, s, b) + i.a + s[t - 1] - cur_array_base_id] = s[t];
                 t--;
                 break;
             case lda:
-                s[t - 1] = s[base(i.l, s, b) + i.a + s[t - 1]];
+                s[t - 1] = s[base(i.l, s, b) + i.a + s[t - 1] - cur_array_base_id];
                 break;
             case ack:
                 s[t] = i.a;
