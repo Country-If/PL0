@@ -960,6 +960,8 @@ int statement(bool *fsys, int *ptx, int lev) {
                     getsymdo;
                     memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                     expressiondo(nxtlev, ptx, lev);                 // 计算下标值并将结果写入栈顶
+                    gendo(ack, table[i].base_id, table[i].size);    // 检查数组是否越界
+                    gendo(jpc, 0, 0);                               // 对栈顶布尔值进行判断
                     if (sym == rparen) {
                         getsymdo;
                         if (sym == becomes) {
@@ -1613,6 +1615,8 @@ int factor(bool *fsys, int *ptx, int lev) {
                             memcpy(nxtlev, fsys, sizeof(bool) * symnum);
                             nxtlev[rparen] = true;
                             expressiondo(nxtlev, ptx, lev);                 // 计算数组下标并将下标写入栈顶
+                            gendo(ack, table[i].base_id, table[i].size);    // 检查数组是否越界
+                            gendo(jpc, 0, 0);                               // 对栈顶布尔值进行判断
                             cur_array_base_id = table[i].base_id;
                             gendo(lda, lev - table[i].level, table[i].adr); // 将数组对应下标的数据取到栈顶
                         }
