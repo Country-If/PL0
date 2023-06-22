@@ -13,8 +13,6 @@ int main() {
     printf("开始调试时间：");
     print_time();
 
-    printf("信息安全1班\t3119005436\t徐国涛\n\n");
-
     bool nxtlev[symnum];
     printf("Input pl/0 file?");
     scanf("%s", fname);               /*输入文件名*/
